@@ -7,7 +7,6 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = NotabilityShortcuts
 
 NotabilityShortcuts_FILES = Tweak.xm
-NotabilityShortcuts_FRAMEWORKS = UIKit
 NotabilityShortcuts_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
