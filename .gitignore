@@ -1,0 +1,5 @@
+.theos/
+packages/
+.idea/
+NotabilityHeaders/
+.DS_Store

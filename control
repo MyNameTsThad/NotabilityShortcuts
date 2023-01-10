@@ -1,0 +1,9 @@
+Package: com.thaddev.notabilityshortcuts
+Name: NotabilityShortcuts
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Adds shortcuts to the Notability app.
+Maintainer: IWant2TryHard
+Author: IWant2TryHard
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000)
