@@ -1,4 +1,7 @@
 #import <UIKit/UIKit.h> 
+#import <UIKit/UIView.h>
+#import <UIKit/UIViewController.h>
+#import <UIKit/UIButton.h>
 
 UIAlertController *createDebugAlert(NSString *title, NSString *message, NSString *defaultActionTitle) {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"[NotabilityShortcuts] %@", title]
@@ -16,98 +19,43 @@ UIAlertController *createDebugAlert(NSString *title, NSString *message, NSString
     return alert;
 }
 
-%hook DrawObject
-- (void)setFillColor:(CGColorRef)arg1 {
-    const CGFloat *components = CGColorGetComponents(arg1);
-    NSString *result = [NSString stringWithFormat:@"%f,%f,%f,%f", components[0], components[1], components[2], components[3]];
+@interface GLUndoRedoButton : UIButton
+@end
 
-    UIAlertController *alert = createDebugAlert(@"setFillColor", result, @"OK");
+%hook NINoteViewTopToolbar
+
+
+-(void)undoButtonAction {
+
+    %orig;
+        
+    UIAlertController *alert = createDebugAlert(@"NINoteViewTopToolbar", @"Undo.", @"OK");
     [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
 
-    %orig(arg1);
 }
 
-- (void)setStrokeColor:(CGColorRef)arg1 {
-    const CGFloat *components = CGColorGetComponents(arg1);
-    NSString *result = [NSString stringWithFormat:@"%f,%f,%f,%f", components[0], components[1], components[2], components[3]];
-
-    UIAlertController *alert = createDebugAlert(@"setStrokeColor", result, @"OK");
-    [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
+-(void)redoButtonAction {
+    %orig;
     
-    %orig(arg1);
-}
-
-- (void)setFillAlpha:(float)arg1 {
-    NSString *alpha = [NSString stringWithFormat:@"%f", arg1];
-
-    UIAlertController *alert = createDebugAlert(@"setFillAlpha", alpha, @"OK");
+    UIAlertController *alert = createDebugAlert(@"NINoteViewTopToolbar", @"Redo.", @"OK");
     [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
-
-    %orig(arg1);
 }
 
-- (void)setStrokeWidth:(float)arg1 {
-    NSString *strokeWidth = [NSString stringWithFormat:@"%f", arg1];
+-(id)initWithFrame:(CGRect)arg1 {
+    NINoteViewTopToolbar *result = %orig(arg1);
 
-    UIAlertController *alert = createDebugAlert(@"setFillAlpha", strokeWidth, @"OK");
-    [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
+    NSLog(@"[NotabilityShortcuts] NINoteViewTopToolbar: Initializing frame.");
 
-    %orig(arg1);
+    GLUndoRedoButton *redoBtn = [[GLUndoRedoButton alloc] init];
+    [[[UIApplication sharedApplication] keyWindow].rootViewController.view addSubview:redoBtn];
+    
+    return result;
 }
 
 %end
 
-%hook ColorPalette
-    -(id)init {
-
-        UIAlertController *alert = createDebugAlert(@"Notability.ColorPalette", @"Initializing", @"OK");
-        [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
-
-        return %orig;
-    }
-%end
-
-%hook ColorPaletteItem
-    -(id)init {
-        
-        UIAlertController *alert = createDebugAlert(@"Notability.ColorPaletteItem", @"Initializing", @"OK");
-        [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
-
-        return %orig;
-    }
-%end
-
-%hook GLToolbar
-    -(id)init {
-        
-        UIAlertController *alert = createDebugAlert(@"Notability.GLToolbar", @"Initializing", @"OK");
-        [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
-
-        return %orig;
-    }
-%end
 
 %hook GLUndoRedoButton
-    -(void)undo {
-
-        %orig;
-        
-        UIAlertController *alert = createDebugAlert(@"GLUndoRedoButton", @"Undo.", @"OK");
-        [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
-
-    }
-
-    -(void)redo {
-
-        %orig;
-        
-        UIAlertController *alert = createDebugAlert(@"GLUndoRedoButton", @"Redo.", @"OK");
-        [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
-
-    }
-%end
-
-%hook IINKEditor
     -(void)undo {
 
         %orig;
@@ -132,8 +80,8 @@ UIAlertController *createDebugAlert(NSString *title, NSString *message, NSString
     UIAlertController *alert = createDebugAlert(@"Initializing...", @"", @"OK");
     [[[UIApplication sharedApplication] keyWindow].rootViewController presentViewController:alert animated:YES completion:nil];
 
-	%init(ColorPalette=objc_getClass("Notability.ColorPalette"),
-        ColorPaletteItem=objc_getClass("Notability.ColorPaletteItem"),
-        GLToolbar=objc_getClass("Notability.GLToolbar")
-    );
+	// %init(ColorPalette=objc_getClass("Notability.ColorPalette"),
+    //     ColorPaletteItem=objc_getClass("Notability.ColorPaletteItem")
+    // );
+    %init;
 }
